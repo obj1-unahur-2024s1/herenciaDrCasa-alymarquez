@@ -1,0 +1,50 @@
+import example.*
+
+describe "test"{
+	// enfermedades
+	const malaria = new EnfermedadInfecciosa(celulasAmenazadas = 500)
+	const otitis = new EnfermedadInfecciosa(celulasAmenazadas = 100)
+	const lupus = new EnfermedadAutoinmune(celulasAmenazadas = 1100)
+	const malaria2 = new EnfermedadInfecciosa(celulasAmenazadas = 800)
+	
+	// personas
+	const logan = new Persona(temperatura= 36, celulas = 3000000, enfermedades = [malaria, otitis, lupus])
+	const frank = new Persona(temperatura=36, celulas= 3500000)
+	
+	// doctores
+	const cameron = new Doctor(cantidadMedicamento = 30)
+	
+	test"logan"{
+		malaria.reproducirse()
+		logan.viveUnDia()
+		assert.equals(1, logan.dias())
+		assert.that(not malaria.esAgresiva(logan))
+		assert.equals(0, logan.celulasAmenazadoras())
+		assert.equals(lupus, logan.enfermedadQueAfectaMasCelulas())
+		assert.that(not logan.estaEnComa())
+	}
+	
+	test"cameron atiende a logan y lo cura"{
+		malaria.reproducirse()
+		malaria.disminuyenCelulas(100)
+		lupus.disminuyenCelulas(500)
+		
+		// cura otitis
+		cameron.atenderPaciente(logan)
+		assert.equals(0, otitis.celulasAmenazadas())
+		assert.equals([malaria, lupus], logan.enfermedades())
+		assert.equals(450, malaria.celulasAmenazadas())
+		
+		// cura malaria
+		cameron.atenderPaciente(logan)
+		assert.equals(0, malaria.celulasAmenazadas())
+		assert.equals([lupus], logan.enfermedades())
+		
+		// cura lupus
+		cameron.atenderPaciente(logan)
+		assert.equals([], logan.enfermedades())
+		assert.equals(0, lupus.celulasAmenazadas())
+	}
+
+	
+}
